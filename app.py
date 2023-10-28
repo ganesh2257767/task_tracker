@@ -6,7 +6,7 @@ import pickle
 import threading
 from datetime import datetime, date
 
-version = 0.1
+version = 0.2
 
 subjects = ['PRG', 'DBS', 'OSM', 'CIS', 'NWK', 'OSL']
 task_types = ['Lab', 'Assignment', 'Quiz', 'Project']
@@ -119,11 +119,15 @@ def minimize():
         case _:
             return
 
-
+icon_image = './tray_icon.png'
 app = gp.GooeyPieApp(f'Task Tracker v{version}')
 app.width = 300
 app.height = 300
-app.set_icon('./tray_icon.png')
+
+try:
+    app.set_icon(icon_image)
+except FileNotFoundError:
+    pass
 
 menu_items = [
     pystray.MenuItem('Open', lambda tray, item: on_click(item=item)),
@@ -131,7 +135,12 @@ menu_items = [
 ]
 menu = pystray.Menu(*menu_items)
 
-icon = Image.open('./tray_icon.png')
+try:
+    icon = Image.open(icon_image)
+except FileNotFoundError:
+    icon = None
+    app.alert("Error", "'tray_icon.png' file not found, please place the .png file in the same directory as the .exe, else the tray icon won't work.\nRestart the app after placing the .png.", 'error')
+
 tray = pystray.Icon(name='Assignment tracker', icon=icon, title='Assignment tracker', menu=menu)
 
 

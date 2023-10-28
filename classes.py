@@ -8,7 +8,11 @@ class Task():
     name: str
     deadline: datetime
     completed: bool = False
-    toast: Notification = Notification(app_id="Task Tracker", title="Task Reminder", msg='', icon=r'D:\Python Projects\Assignment Tracker (Krutika)\notification_icon.png')
+    try:
+        icon = r'D:\Python Projects\Assignment Tracker (Krutika)\notification_icon.png'
+    except FileNotFoundError:
+        icon=None
+    toast: Notification = Notification(app_id="Task Tracker", title="Task Reminder", msg='', icon=icon)
     notifications: bool = True
 
     def toggle_completed(self):
