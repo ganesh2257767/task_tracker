@@ -4,36 +4,36 @@ import pystray
 from PIL import Image
 import pickle
 import threading
-from datetime import datetime, date
+from datetime import datetime
 
 version = 0.2
 
-subjects = ['PRG', 'DBS', 'OSM', 'CIS', 'NWK', 'OSL']
-task_types = ['Lab', 'Assignment', 'Quiz', 'Project']
-table_headings = ['Subject', 'Task', 'Due Date', 'Completed']
+subjects: list[str] = ['PRG', 'DBS', 'OSM', 'CIS', 'NWK', 'OSL']
+task_types: list[str] = ['Lab', 'Assignment', 'Quiz', 'Project']
+table_headings: list[str] = ['Subject', 'Task', 'Due Date', 'Completed']
 
 data = None
 
 
-def load_data_file():
+def load_data_file() -> None:
     global data
     try:
         with open('data', 'rb') as f:
             data = pickle.load(f)
     except FileNotFoundError as e:
-        data = [Subject(x) for x in subjects]
+        data: list[Subject] = [Subject(x) for x in subjects]
     
     add_task_to_table()
     add_task_to_menu()
 
-def save_data_file():
+def save_data_file() -> None:
     with open('data', 'wb') as f:
         pickle.dump(data, f)
     
-def show_task_add_layout(event):
+def show_task_add_layout(event) -> None:
     add_task_window.show_on_top()
 
-def add_task_to_data(event):
+def add_task_to_data(event) -> None:
     global data
     if not all((task_type_dd.selected, task_name_inp.text, due_date.date)):
         app.alert("Error", "Please select/populate all values", 'error')
@@ -53,7 +53,7 @@ def add_task_to_data(event):
     save_data_file()
     clear_fields()
 
-def add_task_to_table():
+def add_task_to_table() -> None:
     table_data = []
     for subject in data:
         if subject.tasks:
@@ -61,10 +61,10 @@ def add_task_to_table():
                 table_data.append([subject.name, task.name, task.deadline.strftime('%d-%b-%y'), 'Yes' if task.completed else 'No'])
     tracker_table.data = table_data
     
-def add_task_to_menu():
-    final = []
+def add_task_to_menu() -> None:
+    final: list = []
     for subject in data:
-        temp = []
+        temp: list = []
         if subject.tasks:
             for task in subject.tasks:
                 notifications = pystray.MenuItem('Notifications', action=lambda tray, item, task=task: on_click(item=item, task=task), checked=lambda _, task=task: task.notifications)
@@ -73,23 +73,23 @@ def add_task_to_menu():
                 temp.append(task_menu)
             subject_menu = pystray.MenuItem(subject.name, pystray.Menu(*temp))
             final.append(subject_menu)
-            final_menu = menu_items[0:1] + final + menu_items[1:]
+            final_menu: list[pystray.MenuItem] = menu_items[0:1] + final + menu_items[1:]
             tray.menu = pystray.Menu(*final_menu)
             tray.update_menu()
 
-def clear_fields():
+def clear_fields() -> None:
     subject_dd.deselect()
     task_type_dd.deselect()
     task_name_inp.clear()
     due_date.clear()
 
-def check_due_date():
+def check_due_date() -> None:
     for subject in data:
         for task in subject.tasks:
             task.alert(subject.name)
 
 
-def on_click(**kwargs):
+def on_click(**kwargs) -> None:
     match str(kwargs['item']):
         case 'Open':
             app._root.deiconify()
@@ -109,8 +109,8 @@ def on_click(**kwargs):
             app.update()
 
 
-def minimize():
-    reply = app.confirm_yesnocancel('Sure?', 'Do you want to close the app?\n"Yes" to close.\n"No" to minimize.\n"Cancel" to stay on the app.', 'info')
+def minimize() -> None:
+    reply: bool | None = app.confirm_yesnocancel('Sure?', 'Do you want to close the app?\n"Yes" to close.\n"No" to minimize.\n"Cancel" to stay on the app.', 'info')
     match reply:
         case True:
             app.exit()
@@ -129,14 +129,14 @@ try:
 except FileNotFoundError:
     pass
 
-menu_items = [
+menu_items: list[pystray.MenuItem] = [
     pystray.MenuItem('Open', lambda tray, item: on_click(item=item)),
     pystray.MenuItem('Exit', lambda tray, item: on_click(item=item))
 ]
 menu = pystray.Menu(*menu_items)
 
 try:
-    icon = Image.open(icon_image)
+    icon: Image = Image.open(icon_image)
 except FileNotFoundError:
     icon = None
     app.alert("Error", "'tray_icon.png' file not found, please place the .png file in the same directory as the .exe, else the tray icon won't work.\nRestart the app after placing the .png.", 'error')
