@@ -2,6 +2,8 @@ from datetime import datetime
 from dataclasses import dataclass, field
 from winotify import Notification, audio
 
+version = 0.3
+
 @dataclass
 class Task():
     type: str
@@ -12,7 +14,7 @@ class Task():
         icon = r'D:\Python Projects\Assignment Tracker (Krutika)\notification_icon.png'
     except FileNotFoundError:
         icon=None
-    toast: Notification = Notification(app_id="Task Tracker", title="Task Reminder", msg='', icon=icon)
+    toast: Notification = Notification(app_id=f"Task Tracker v{version}", title="Task Reminder", msg='', icon=icon)
     toast.set_audio(audio.Reminder, loop=False)
     notifications: bool = True
 

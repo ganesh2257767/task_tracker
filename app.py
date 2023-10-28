@@ -1,12 +1,11 @@
 import gooeypie as gp
-from classes import Task, Subject
+from classes import Task, Subject, version
 import pystray
 from PIL import Image
 import pickle
 import threading
 from datetime import datetime
 
-version = 0.3
 
 subjects: list[str] = ['PRG', 'DBS', 'OSM', 'CIS', 'NWK', 'OSL']
 task_types: list[str] = ['Lab', 'Assignment', 'Quiz', 'Project']
@@ -102,7 +101,7 @@ def toggle(toggle_what, task):
 
 def on_click(**kwargs) -> None:
     item = str(kwargs['item'])
-    task = kwargs['task']
+    task = kwargs.get('task', None)
     match item:
         case 'Open':
             app._root.deiconify()
@@ -185,6 +184,10 @@ add_task_window.add(due_date_lbl, 3, 2)
 add_task_window.add(due_date, 4, 2)
 add_task_window.add(add_task_btn, 5, 1, column_span=2, align='center')
 
+# Will notify every 3 hours
+# app.set_interval(1000*60*60*3, lambda: threading.Thread(target=check_due_date).start())
+
+# Only for testing, comment out before committing and making an executable
 app.set_interval(1000*10, lambda: threading.Thread(target=check_due_date).start())
 
 app.on_open(load_data_file)
