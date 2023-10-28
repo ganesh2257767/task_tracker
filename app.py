@@ -12,7 +12,7 @@ subjects: list[str] = ['PRG', 'DBS', 'OSM', 'CIS', 'NWK', 'OSL']
 task_types: list[str] = ['Lab', 'Assignment', 'Quiz', 'Project']
 table_headings: list[str] = ['Subject', 'Task', 'Due Date', 'Completed']
 
-data = None
+data: list[Subject] | None = None
 
 
 def load_data_file() -> None:
@@ -21,7 +21,7 @@ def load_data_file() -> None:
         with open('data', 'rb') as f:
             data = pickle.load(f)
     except FileNotFoundError as e:
-        data: list[Subject] = [Subject(x) for x in subjects]
+        data = [Subject(x) for x in subjects]
     
     add_task_to_table()
     add_task_to_menu()
