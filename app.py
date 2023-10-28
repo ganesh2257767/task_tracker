@@ -6,7 +6,7 @@ import pickle
 import threading
 from datetime import datetime
 
-version = 0.2
+version = 0.3
 
 subjects: list[str] = ['PRG', 'DBS', 'OSM', 'CIS', 'NWK', 'OSL']
 task_types: list[str] = ['Lab', 'Assignment', 'Quiz', 'Project']
@@ -89,24 +89,27 @@ def check_due_date() -> None:
             task.alert(subject.name)
 
 
+def toggle(toggle_what, task):
+    if toggle_what == 'Completed':
+        task.toggle_completed()
+    else:
+        task.toggle_notifications()
+        
+    add_task_to_table()
+    save_data_file()
+    tray.update_menu()
+    app.update()
+
 def on_click(**kwargs) -> None:
-    match str(kwargs['item']):
+    item = str(kwargs['item'])
+    task = kwargs['task']
+    match item:
         case 'Open':
             app._root.deiconify()
         case 'Exit':
             app.exit()
-        case 'Completed':
-            kwargs['task'].toggle_completed()
-            add_task_to_table()
-            save_data_file()
-            tray.update_menu()
-            app.update()
-        case 'Notifications':
-            kwargs['task'].toggle_notifications()
-            add_task_to_table()
-            save_data_file()
-            tray.update_menu()
-            app.update()
+        case _:
+            toggle(item, task)
 
 
 def minimize() -> None:

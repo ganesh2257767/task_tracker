@@ -13,6 +13,7 @@ class Task():
     except FileNotFoundError:
         icon=None
     toast: Notification = Notification(app_id="Task Tracker", title="Task Reminder", msg='', icon=icon)
+    toast.set_audio(audio.Reminder, loop=False)
     notifications: bool = True
 
     def toggle_completed(self):
@@ -29,9 +30,13 @@ class Task():
             hours, _ = divmod(remaining_seconds, 3600)
             minutes, seconds = divmod(_, 60)
             
-            if 5 > days:
+            if 0 <= days <= 5:
                 self.toast.msg = f"{subject}: {self.name} due in {days} {'days' if days != 1 else 'day'}, {hours} {'hours' if hours != 1 else 'hour'} and {minutes} {'minutes' if minutes != 1 else 'minute'}."
                 self.toast.show()
+            if days < 0:
+                self.toast.msg = f"{subject}: {self.name} is overdue!"
+                self.toast.show()
+                
     
     def __repr__(self) -> str:
         return f'{self.name} - {self.completed} - {self.notifications}'

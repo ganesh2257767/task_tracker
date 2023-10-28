@@ -4,3 +4,5 @@ dist/
 env/
 data
 *.spec
+test
+test.*
