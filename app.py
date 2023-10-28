@@ -143,7 +143,7 @@ except FileNotFoundError:
     icon = None
     app.alert("Error", "'tray_icon.png' file not found, please place the .png file in the same directory as the .exe, else the tray icon won't work.\nRestart the app after placing the .png.", 'error')
 
-tray = pystray.Icon(name='Assignment tracker', icon=icon, title='Assignment tracker', menu=menu)
+tray = pystray.Icon(name=f'Task Tracker v{version}', icon=icon, title=f'Task Tracker v{version}', menu=menu)
 
 
 tracker_table = gp.Table(app, table_headings)
