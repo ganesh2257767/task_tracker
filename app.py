@@ -94,7 +94,6 @@ def on_click(**kwargs):
         case 'Open':
             app._root.deiconify()
         case 'Exit':
-            print('Exit')
             app.exit()
         case 'Completed':
             kwargs['task'].toggle_completed()

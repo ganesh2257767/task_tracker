@@ -26,10 +26,8 @@ class Task():
             minutes, seconds = divmod(_, 60)
             
             if 5 > days:
-                print("In less than 5 days")
                 self.toast.msg = f"{subject}: {self.name} due in {days} {'days' if days != 1 else 'day'}, {hours} {'hours' if hours != 1 else 'hour'} and {minutes} {'minutes' if minutes != 1 else 'minute'}."
                 self.toast.show()
-                print(f"{subject}: {self.name} due in {days} {'days' if days != 1 else 'day'}, {hours} {'hours' if hours != 1 else 'hour'} and {minutes} {'minutes' if minutes != 1 else 'minute'}.")
     
     def __repr__(self) -> str:
         return f'{self.name} - {self.completed} - {self.notifications}'
