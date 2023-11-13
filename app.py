@@ -21,16 +21,19 @@ def load_data_file() -> None:
             data = pickle.load(f)
     except FileNotFoundError as e:
         data = [Subject(x) for x in subjects]
-    
+
     add_task_to_table()
     add_task_to_menu()
+
 
 def save_data_file() -> None:
     with open('data', 'wb') as f:
         pickle.dump(data, f)
-    
+
+
 def show_task_add_layout(event) -> None:
     add_task_window.show_on_top()
+
 
 def add_task_to_data(event) -> None:
     global data
@@ -40,47 +43,57 @@ def add_task_to_data(event) -> None:
     delta = due_date.date - datetime.now().date()
     delta = delta.days
     if delta < 0:
-        app.alert("Error", "Selected due date in the past, please correct!", "error")
+        app.alert(
+            "Error", "Selected due date in the past, please correct!", "error")
         return
     for subject in data:
         if subject.name == subject_dd.selected:
-            subject.add_tasks(Task(task_type_dd.selected, task_name_inp.text, datetime.combine(due_date.date, datetime.max.time())))
-
+            subject.add_tasks(Task(task_type_dd.selected, task_name_inp.text, datetime.combine(
+                due_date.date, datetime.max.time())))
 
     add_task_to_menu()
     add_task_to_table()
     save_data_file()
     clear_fields()
 
+
 def add_task_to_table() -> None:
     table_data = []
     for subject in data:
         if subject.tasks:
             for task in subject.tasks:
-                table_data.append([subject.name, task.name, task.deadline.strftime('%d-%b-%y'), 'Yes' if task.completed else 'No'])
+                table_data.append([subject.name, task.name, task.deadline.strftime(
+                    '%d-%b-%y'), 'Yes' if task.completed else 'No'])
     tracker_table.data = table_data
-    
+
+
 def add_task_to_menu() -> None:
     final: list = []
     for subject in data:
         temp: list = []
         if subject.tasks:
             for task in subject.tasks:
-                notifications = pystray.MenuItem('Notifications', action=lambda tray, item, task=task: on_click(item=item, task=task), checked=lambda _, task=task: task.notifications)
-                completed = pystray.MenuItem('Completed', action=lambda tray, item, task=task: on_click(item=item, task=task), checked=lambda _, task=task: task.completed)
-                task_menu = pystray.MenuItem(task.name, pystray.Menu(completed, notifications))
+                notifications = pystray.MenuItem('Notifications', action=lambda tray, item, task=task: on_click(
+                    item=item, task=task), checked=lambda _, task=task: task.notifications)
+                completed = pystray.MenuItem('Completed', action=lambda tray, item, task=task: on_click(
+                    item=item, task=task), checked=lambda _, task=task: task.completed)
+                task_menu = pystray.MenuItem(
+                    task.name, pystray.Menu(completed, notifications))
                 temp.append(task_menu)
             subject_menu = pystray.MenuItem(subject.name, pystray.Menu(*temp))
             final.append(subject_menu)
-            final_menu: list[pystray.MenuItem] = menu_items[0:1] + final + menu_items[1:]
+            final_menu: list[pystray.MenuItem] = menu_items[0:1] + \
+                final + menu_items[1:]
             tray.menu = pystray.Menu(*final_menu)
             tray.update_menu()
+
 
 def clear_fields() -> None:
     subject_dd.deselect()
     task_type_dd.deselect()
     task_name_inp.clear()
     due_date.clear()
+
 
 def check_due_date() -> None:
     for subject in data:
@@ -93,11 +106,12 @@ def toggle(toggle_what, task):
         task.toggle_completed()
     else:
         task.toggle_notifications()
-        
+
     add_task_to_table()
     save_data_file()
     tray.update_menu()
     app.update()
+
 
 def on_click(**kwargs) -> None:
     item = str(kwargs['item'])
@@ -112,7 +126,8 @@ def on_click(**kwargs) -> None:
 
 
 def minimize() -> None:
-    reply: bool | None = app.confirm_yesnocancel('Sure?', 'Do you want to close the app?\n"Yes" to close.\n"No" to minimize.\n"Cancel" to stay on the app.', 'info')
+    reply: bool | None = app.confirm_yesnocancel(
+        'Sure?', 'Do you want to close the app?\n"Yes" to close.\n"No" to minimize.\n"Cancel" to stay on the app.', 'info')
     match reply:
         case True:
             app.exit()
@@ -120,6 +135,7 @@ def minimize() -> None:
             app._root.withdraw()
         case _:
             return
+
 
 icon_image = './tray_icon.png'
 app = gp.GooeyPieApp(f'Task Tracker v{version}')
@@ -143,7 +159,8 @@ except FileNotFoundError:
     icon = None
     app.alert("Error", "'tray_icon.png' file not found, please place the .png file in the same directory as the .exe, else the tray icon won't work.\nRestart the app after placing the .png.", 'error')
 
-tray = pystray.Icon(name=f'Task Tracker v{version}', icon=icon, title=f'Task Tracker v{version}', menu=menu)
+tray = pystray.Icon(
+    name=f'Task Tracker v{version}', icon=icon, title=f'Task Tracker v{version}', menu=menu)
 
 
 tracker_table = gp.Table(app, table_headings)
@@ -188,7 +205,8 @@ add_task_window.add(add_task_btn, 5, 1, column_span=2, align='center')
 # app.set_interval(1000*60*60*3, lambda: threading.Thread(target=check_due_date).start())
 
 # Only for testing, comment out before committing and making an executable
-app.set_interval(1000*10, lambda: threading.Thread(target=check_due_date).start())
+app.set_interval(
+    1000*10, lambda: threading.Thread(target=check_due_date).start())
 
 app.on_open(load_data_file)
 app.on_close(minimize)
