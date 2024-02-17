@@ -1,3 +1,12 @@
+# Important note: This tool requires modifying the MenuItem class for it to work.
+# The modification is quite simply but I forgot what I did the first time or why I even needed it
+# and had to refigure it out.
+# So writing this note for future changes.
+# The changes is as follows:
+# Go to the pystray module folder and _base.py, edit the class MenuItem() and add the following line in the _assert_action() function:
+# elif argcount == 3:
+#       return action
+
 import gooeypie as gp
 from classes import Task, Subject, version
 import pystray
@@ -202,11 +211,10 @@ add_task_window.add(due_date, 4, 2)
 add_task_window.add(add_task_btn, 5, 1, column_span=2, align='center')
 
 # Will notify every 3 hours
-# app.set_interval(1000*60*60*3, lambda: threading.Thread(target=check_due_date).start())
+app.set_interval(1000*60*60*3, lambda: threading.Thread(target=check_due_date).start())
 
 # Only for testing, comment out before committing and making an executable
-app.set_interval(
-    1000*10, lambda: threading.Thread(target=check_due_date).start())
+# app.set_interval(1000*10, lambda: threading.Thread(target=check_due_date).start())
 
 app.on_open(load_data_file)
 app.on_close(minimize)
